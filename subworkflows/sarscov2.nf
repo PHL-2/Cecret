@@ -38,6 +38,13 @@ workflow sarscov2 {
         
         nextclade(ch_fastas.collect(), ch_dataset)
         freyja_variants(ch_bam.map{it -> tuple(it[0], it[1])}.combine(ch_reference_genome))
+
+        if ( params.freyja_update ) {
+            freyja_demix_update(freyja_variants.out.variants)
+        } else {
+            freyja_demix(freyja_variants.out.variants)
+        }
+
         freyja_demix(freyja_variants.out.variants)
         freyja_aggregate(freyja_demix.out.demix.collect(), ch_freyja_script)
         

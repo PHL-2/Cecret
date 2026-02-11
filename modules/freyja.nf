@@ -95,7 +95,62 @@ process freyja_demix {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
       freyja: \$(freyja --version | awk '{print \$NF}')
-      barcode: \$(freyja demix --version | head -n 2 | tail -n 1 )
+      barcode: \$(freyja demix --version | tail -n 3 | head -n 1 | awk '{print \$NF}')
+      container: ${task.container}
+    END_VERSIONS
+  """
+}
+
+process freyja_demix_update {
+  tag           "${sample}"
+  label         "process_medium"
+  //errorStrategy { task.attempt < 2 ? 'retry' : 'ignore'}
+  publishDir    path: params.outdir, mode: 'copy', saveAs: { filename -> filename.equals('versions.yml') ? null : filename }
+  container     'staphb/freyja:1.5.2-11_18_2024-01-35-2024-11-18'
+
+
+  //#UPHLICA maxForks 10
+  //#UPHLICA pod annotation: 'scheduler.illumina.com/presetSize', value: 'standard-xlarge'
+  //#UPHLICA memory 60.GB
+  //#UPHLICA cpus 14
+  //#UPHLICA time '45m'
+
+  when:
+  params.freyja && (task.ext.when == null || task.ext.when)
+
+  input:
+  tuple val(sample), file(variants)
+
+  output:
+  path "freyja/${sample}_demix.tsv", optional: true, emit: demix
+  path "freyja/${sample}*",          optional: true, emit: files
+  path "logs/${task.process}/${sample}.${workflow.sessionId}.log"
+  path "versions.yml", emit: versions
+
+  shell:
+  def args   = task.ext.args   ?: "${params.freyja_demix_options}"
+  def prefix = task.ext.prefix ?: "${sample}"
+  """
+    mkdir -p freyja logs/${task.process}
+    log=logs/${task.process}/${prefix}.${workflow.sessionId}.log
+
+    date > \$log
+    freyja --version >> \$log
+
+    freyja update | tee -a \$log
+
+    freyja demix ${args} \
+      ${variants[1]} \
+      ${variants[0]} \
+      --output freyja/${prefix}_demix.tsv \
+      | tee -a \$log
+
+    freyja --help
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+      freyja: \$(freyja --version | awk '{print \$NF}')
+      barcode: \$(freyja demix --version | tail -n 3 | head -n 1 | awk '{print \$NF}')
       container: ${task.container}
     END_VERSIONS
   """
