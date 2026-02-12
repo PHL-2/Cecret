@@ -187,6 +187,7 @@ params.download_nextclade_dataset           = true
 //# organism specific
 params.freyja                               = true
 params.freyja_aggregate                     = true
+params.freyja_update                        = true
 params.nextclade                            = true
 params.pangolin                             = true
 params.pango_collapse                       = true
