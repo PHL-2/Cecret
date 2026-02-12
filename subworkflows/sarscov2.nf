@@ -42,15 +42,16 @@ workflow sarscov2 {
 
         if ( params.freyja_update ) {
             freyja_demix_update(freyja_variants.out.variants)
+            freyja_aggregate(freyja_demix_update.out.demix.collect(), ch_freyja_script)
+            ch_versions = ch_versions.mix(freyja_demix_update.out.versions.first())
         } else {
             freyja_demix(freyja_variants.out.variants)
+            freyja_aggregate(freyja_demix.out.demix.collect(), ch_freyja_script)
+            ch_versions = ch_versions.mix(freyja_demix.out.versions.first())
         }
-
-        freyja_aggregate(freyja_demix.out.demix.collect(), ch_freyja_script)
         
         ch_versions = ch_versions.mix(nextclade.out.versions)
         ch_versions = ch_versions.mix(freyja_variants.out.versions.first())
-        ch_versions = ch_versions.mix(freyja_demix.out.versions.first())
         ch_versions = ch_versions.mix(freyja_aggregate.out.versions)
 
     emit:
