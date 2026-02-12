@@ -95,7 +95,7 @@ process freyja_demix {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
       freyja: \$(freyja --version | awk '{print \$NF}')
-      barcode: \$(freyja demix --version | tail -n 3 | head -n 1 | awk '{print \$NF}')
+      barcode: \$(freyja demix --version | grep -v '[:/,()]' | grep -E '[0-9]{4}' | awk '{print \$NF}')
       container: ${task.container}
     END_VERSIONS
   """
@@ -150,7 +150,7 @@ process freyja_demix_update {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
       freyja: \$(freyja --version | awk '{print \$NF}')
-      barcode: \$(freyja demix --version | tail -n 3 | head -n 1 | awk '{print \$NF}')
+      barcode: \$(freyja demix --version | grep -v '[:/,()]' | grep -E '[0-9]{4}' | awk '{print \$NF}')
       container: ${task.container}
     END_VERSIONS
   """
