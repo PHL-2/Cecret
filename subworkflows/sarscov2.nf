@@ -1,5 +1,6 @@
 include { freyja_aggregate }             from '../modules/freyja'        addParams(params)
 include { freyja_demix }                 from '../modules/freyja'        addParams(params)
+include { freyja_demix_update }          from '../modules/freyja'        addParams(params)
 include { freyja_variants }              from '../modules/freyja'        addParams(params)
 include { pangolin }                     from '../modules/pangolin'      addParams(params)
 include { pango_collapse }               from '../modules/pangocollapse' addParams(params)
@@ -45,7 +46,6 @@ workflow sarscov2 {
             freyja_demix(freyja_variants.out.variants)
         }
 
-        freyja_demix(freyja_variants.out.variants)
         freyja_aggregate(freyja_demix.out.demix.collect(), ch_freyja_script)
         
         ch_versions = ch_versions.mix(nextclade.out.versions)
