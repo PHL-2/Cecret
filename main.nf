@@ -507,10 +507,10 @@ ch_paired_reads
   .unique()
   .set { ch_reads }
 
-ch_paired_reads.view { "Paired-end Fastq files found : ${it[0]}" }
-ch_single_reads.view { "Fastq files found : ${it[0]}" }
-ch_fastas.view       { "Fasta file found : ${it[0]}" }
-ch_multifastas.view  { "MultiFasta file found : ${it}" }
+//# ch_paired_reads.view { "Paired-end Fastq files found : ${it[0]}" }
+//# ch_single_reads.view { "Fastq files found : ${it[0]}" }
+//# ch_fastas.view       { "Fasta file found : ${it[0]}" }
+//# ch_multifastas.view  { "MultiFasta file found : ${it}" }
 ch_reads.ifEmpty     { println("No fastq or fastq.gz files were found at ${params.reads} or ${params.single_reads}") }
 
 workflow CECRET {
